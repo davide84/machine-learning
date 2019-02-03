@@ -13636,7 +13636,7 @@ I attempted to predict feature "Fresh" and the score was -0.698. I would then sa
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f75cfe07860&gt;</pre>
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7fda386164e0&gt;</pre>
 </div>
 
 </div>
@@ -13679,7 +13679,7 @@ I attempted to predict feature "Fresh" and the score was -0.698. I would then sa
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <ul>
-<li>Distribution of datasets: The distributions of the single values look "normal" in the statistical sense, centered on some low value. There are a few "strong" outliers and a lot of points close to 0 or with lower values; the representation of the latter is probably altered by the effect of outliers on the plot scale.</li>
+<li>Distribution of datasets: The distributions of the single values are not normal, but centered on some low value and positively skewed.</li>
 <li>Correlations: I see some correlation between the feature pairs (Grocery, Milk), (Grocery, Detergent) and also (Milk, Detergents). This is confirmed by the heatmap plot. The scatter plots for these pairs of features show points (more or less) distributed along a line, the others describe cloud shapes.</li>
 <li>Relevance of feature: I predicted that 'Fresh' could not be deduced from other features, and this is confirmed by the lack of relevant correlations in the plots.</li>
 </ul>
@@ -15044,7 +15044,7 @@ If we consider only Dimensions 1 and 2 we could represent our data with a 2D spa
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f75d22bdf60&gt;</pre>
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7fda3acd8f60&gt;</pre>
 </div>
 
 </div>
@@ -15468,7 +15468,7 @@ If I look back at the sample points defined before Question 1, I would say that 
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong>
-I would say that a lower delivery frequency would have less impact on Detergents_Paper, and Frozen categories, and the bigger impact on Fresh and Delicatessen. I am inclined to comment that customers from Segment 1 are more likely to accept the change because their purchases are less affected by Fresh and Delicatessen.</p>
+To run an A/B test, the wholesale distributor could select a subset of the customers (say 10%) in which both Clusters are equally represented; this subset of customers would have the delivery frequency changed for a certain period. Customer reactions will then be analyzed for the two clusters separately, and each cluster may or may not have the change applied permanently.</p>
 
 </div>
 </div>
