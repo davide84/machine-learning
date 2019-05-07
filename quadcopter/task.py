@@ -29,8 +29,11 @@ class Task:
 
     def get_reward(self):
         """Uses current pose of sim to return reward."""
-        reward = 1.-.3*(abs(self.sim.pose[:3] - self.target_pos)).sum()
-        return reward
+        distance_to_target = np.square(self.sim.pose[:3] - self.target_pos).sum()
+        if distance_to_target < 0.1:
+            return 100
+        else:
+            return 1. - .3 * distance_to_target
         '''
         """Special case: huge penalty for ground crash"""
         if self.sim.pose[2] < 0 or (self.sim.pose[2] == 0 and self.sim.v[2] < 0):
