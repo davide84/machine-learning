@@ -31,6 +31,17 @@ class Task:
         """Uses current pose of sim to return reward."""
         reward = 1.-.3*(abs(self.sim.pose[:3] - self.target_pos)).sum()
         return reward
+        '''
+        """Special case: huge penalty for ground crash"""
+        if self.sim.pose[2] < 0 or (self.sim.pose[2] == 0 and self.sim.v[2] < 0):
+        #if self.sim.done and self.sim.runtime > self.sim.time:
+            return -1000
+        """Uses current pose of sim to return reward."""
+        distance_to_target = np.square(self.sim.pose[:3] - self.target_pos).sum()
+        reward = 1. - .3 * distance_to_target
+        if distance_to_target < 1:
+            reward += 10
+        '''
 
     def step(self, rotor_speeds):
         """Uses action to obtain next state, reward, done."""
