@@ -63,12 +63,12 @@ class Task:
                 done = True
                 print('---> TARGET REACHED ++ ++ ++')
             elif done:
-                if self.sim.pose[2] <= 0:
+                if self.sim.time > self.sim.runtime:
+                    print('---> AGENT RUN OUT OF TIME')
+                elif self.sim.pose[2] <= 0:
                     print('---> AGENT CRASHED :( :( :(')
                 else:
                     print('---> AGENT WENT OUT-OF-BOUNDARIES')
-            if done:
-                break
         next_state = np.concatenate(pose_all)
         return next_state, reward, done
 
