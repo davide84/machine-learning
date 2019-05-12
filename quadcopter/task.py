@@ -2,6 +2,10 @@ import numpy as np
 from physics_sim import PhysicsSim
 
 
+def calc_dist(current_pos, target_pos):
+    return np.sqrt(np.square(current_pos - target_pos).sum())
+
+
 class Task:
     """Task (environment) that defines the goal and provides feedback to the agent."""
     def __init__(self, init_pose=None, init_velocities=None, 
@@ -25,26 +29,26 @@ class Task:
         self.action_size = 4
 
         # Goal
-        self.target_pos = target_pos if target_pos is not None else np.array([0., 0., 10.]) 
+        self.target_pos = target_pos if target_pos is not None else np.array([0., 0., 10.])
+        self.target_dist_zero = calc_dist(self.sim.pose[:3], self.target_pos)
+        self.target_dist_curr = self.target_dist_zero
+        self.target_reached = False
 
     def get_reward(self):
         """Uses current pose of sim to return reward."""
-        distance_to_target = np.square(self.sim.pose[:3] - self.target_pos).sum()
-        if distance_to_target < 0.1:
-            return 100
+        target_dist_prev = self.target_dist_curr
+        self.target_dist_curr = calc_dist(self.sim.pose[:3], self.target_pos)
+        if self.target_dist_curr < 0.5:
+            self.target_reached = True
+            return 500
+        if self.sim.done and not self.target_reached:  # out of boundaries, probably a crash
+            return -500
+        if self.target_dist_curr < target_dist_prev:
+            return +1.0  # bonus for going closer
         else:
-            return 1. - .3 * distance_to_target
-        '''
-        """Special case: huge penalty for ground crash"""
-        if self.sim.pose[2] < 0 or (self.sim.pose[2] == 0 and self.sim.v[2] < 0):
-        #if self.sim.done and self.sim.runtime > self.sim.time:
-            return -1000
-        """Uses current pose of sim to return reward."""
-        distance_to_target = np.square(self.sim.pose[:3] - self.target_pos).sum()
-        reward = 1. - .3 * distance_to_target
-        if distance_to_target < 1:
-            reward += 10
-        '''
+            return -1.0  # penalty for going farther away or wasting time
+        # below the original reward
+        # return 1. - .3 * np.abs(self.sim.pose[:3] - self.target_pos).sum()
 
     def step(self, rotor_speeds):
         """Uses action to obtain next state, reward, done."""
@@ -53,13 +57,25 @@ class Task:
         done = False
         for _ in range(self.action_repeat):
             done = self.sim.next_timestep(rotor_speeds)  # update the sim pose and velocities
-            reward += self.get_reward() 
+            reward += self.get_reward()
             pose_all.append(self.sim.pose)
+            if self.target_reached:
+                done = True
+                print('---> TARGET REACHED ++ ++ ++')
+            elif done:
+                if self.sim.pose[2] <= 0:
+                    print('---> AGENT CRASHED :( :( :(')
+                else:
+                    print('---> AGENT WENT OUT-OF-BOUNDARIES')
+            if done:
+                break
         next_state = np.concatenate(pose_all)
         return next_state, reward, done
 
     def reset(self):
         """Reset the sim to start a new episode."""
         self.sim.reset()
-        state = np.concatenate([self.sim.pose] * self.action_repeat) 
+        self.target_dist_curr = np.inf
+        self.target_reached = False
+        state = np.concatenate([self.sim.pose] * self.action_repeat)
         return state
