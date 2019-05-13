@@ -41,6 +41,8 @@ class Task:
         if self.target_dist_curr < 0.5:
             self.target_reached = True
             return 500
+        if self.sim.done and self.sim.time > self.sim.runtime:  # out of time
+            return -10
         if self.sim.done and not self.target_reached:  # out of boundaries, probably a crash
             return -500
         if self.target_dist_curr < target_dist_prev:
@@ -70,7 +72,7 @@ class Task:
                 else:
                     print('---> AGENT WENT OUT-OF-BOUNDARIES')
         next_state = np.concatenate(pose_all)
-        return next_state, reward, done
+        return next_state, reward / self.action_repeat, done
 
     def reset(self):
         """Reset the sim to start a new episode."""

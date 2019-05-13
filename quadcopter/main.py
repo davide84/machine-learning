@@ -14,7 +14,7 @@ def running_mean(x, N):
 
 
 def main():
-    num_episodes = 20
+    num_episodes = 100
     init_pose = np.array([0., 0., 30., 0., 0., 0.])
     init_velocities = np.array([0., 0., 10.])
     target_pos = np.array([0., 0., 40.])
@@ -31,16 +31,16 @@ def main():
     for i_episode in range(1, num_episodes+1):
         print('=== Beginning episode #' + str(i_episode))
         state = agent.reset_episode()  # start a new episode
+        total_episode_reward = 0
         while True:
             action = agent.act(state)
             next_state, reward, done = task.step(action)
-            # agent.step(reward, done)
+            total_episode_reward += reward
             agent.step(action, reward, next_state, done)
             state = next_state
             if done:
                 results['episode'].append(i_episode)
-                # results['reward'].append(agent.last_score)
-                results['reward'].append(0)
+                results['reward'].append(total_episode_reward)
                 results['final_pose'].append(task.sim.pose)
                 print('Final step:', task.sim.time, task.sim.pose[:3], task.sim.v, reward)
                 # print("Episode = {:4d}, score = {:7.3f} (best = {:7.3f}), noise_scale = {}".format(
@@ -55,11 +55,11 @@ def main():
 
     print('Successes:', count_success, '- Failures:', count_failure)
 
-    #plt.plot(results['episode'], results['reward'], label='reward')
-    #smoothed_rews = running_mean(results['reward'], 50)
-    #plt.plot(results['episode'][-len(smoothed_rews):], smoothed_rews, label='average_reward')
-    #plt.legend()
-    #plt.show()
+    plt.plot(results['episode'], results['reward'], label='reward')
+    smoothed_rews = running_mean(results['reward'], 50)
+    plt.plot(results['episode'][-len(smoothed_rews):], smoothed_rews, label='average_reward')
+    plt.legend()
+    plt.show()
 
 
 if __name__ == '__main__':
