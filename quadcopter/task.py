@@ -40,17 +40,15 @@ class Task:
         self.target_dist_curr = calc_dist(self.sim.pose[:3], self.target_pos)
         if self.target_dist_curr < 0.5:
             self.target_reached = True
-            return 500
+            return 1000
         if self.sim.done and self.sim.time > self.sim.runtime:  # out of time
-            return -10
+            return -100
         if self.sim.done and not self.target_reached:  # out of boundaries, probably a crash
-            return -500
+            return -1000
         if self.target_dist_curr < target_dist_prev:
             return +1.0  # bonus for going closer
         else:
             return -1.0  # penalty for going farther away or wasting time
-        # below the original reward
-        # return 1. - .3 * np.abs(self.sim.pose[:3] - self.target_pos).sum()
 
     def step(self, rotor_speeds):
         """Uses action to obtain next state, reward, done."""
@@ -63,6 +61,7 @@ class Task:
             pose_all.append(self.sim.pose)
             if self.target_reached:
                 done = True
+            '''
                 print('---> TARGET REACHED ++ ++ ++')
             elif done:
                 if self.sim.time > self.sim.runtime:
@@ -71,6 +70,7 @@ class Task:
                     print('---> AGENT CRASHED :( :( :(')
                 else:
                     print('---> AGENT WENT OUT-OF-BOUNDARIES')
+            '''
         next_state = np.concatenate(pose_all)
         return next_state, reward / self.action_repeat, done
 

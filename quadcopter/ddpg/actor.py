@@ -61,3 +61,5 @@ class Actor:
             inputs=[self.model.input, action_gradients, K.learning_phase()],
             outputs=[],
             updates=updates_op)
+
+        self.model.summary()

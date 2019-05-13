@@ -54,6 +54,8 @@ class Critic:
         optimizer = optimizers.Adam()
         self.model.compile(optimizer=optimizer, loss='mse')
 
+        self.model.summary()
+
         # Compute action gradients (derivative of Q values w.r.t. to actions)
         action_gradients = K.gradients(q_values, actions)
 
